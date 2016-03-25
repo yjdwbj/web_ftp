@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html lang="zh_CN">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/dashboard.css"/>
+</head>
+<body class="dashboard" data-admin-utc-offset="0">
+<div id="container">
+    <div id="header">
+    <div id="branding">
+    <h1 id="site-name">django site</h1>
+    </div>
+</div>
+</div>
+    {% csrf_token %}
+    {% block content %}{% endblock %}
+
+</body>
+</html>
+
