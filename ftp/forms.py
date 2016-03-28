@@ -2,8 +2,10 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django import forms
+from django.conf import settings
 from .models import FtpUser,FileVer,Product
 from django.contrib.auth.forms import UserCreationForm,UserChangeForm
+from django.contrib.admin.templatetags.admin_static import static
 
 class FtpUserCreationForm(UserCreationForm):
     def __init__(self,*args,**kargs):
@@ -114,3 +116,21 @@ class RegisterForm(forms.Form):
         user.save()
         g = Group.objects.get(id=1)
         g.user_set.add(user)
+
+
+    @property
+    def media(self):
+        extra = '' if settings.DEBUG else '.min'
+        js = [
+            'core.js',
+            'vendor/jquery/jquery%s.js' % extra,
+            'jquery.init.js',
+            'admin/RelatedObjectLookups.js',
+            'actions%s.js' % extra,
+            'urlify.js',
+            'prepopulate%s.js' % extra,
+            'vendor/xregexp/xregexp.min.js',
+        ]
+        return forms.Media(js=[static('admin/js/%s' % url) for url in js])
+
+

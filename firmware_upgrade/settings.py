@@ -26,6 +26,8 @@ SECRET_KEY = '1lg&+el+83@3^r-!64x*no%+iysc=2_)!ff1(jw_iyzr&=ym--'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+USE_I18N = False
+
 
 
 # Application definition
@@ -45,11 +47,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ftp'
-
 ]
+
+LOCALE_PATHS= ( os.path.join(BASE_DIR,'locale'), )
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -131,4 +135,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
+STATIC_ROOT =  os.path.join(BASE_DIR )
 STATIC_URL = '/static/'

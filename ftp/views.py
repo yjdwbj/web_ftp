@@ -17,6 +17,7 @@ from django.views.generic.edit import FormView
 from django.contrib.auth import authenticate,login
 from django.core.servers.basehttp import get_internal_wsgi_application
 from notebook.tree.handlers import TreeHandler
+from .captcha import get_code
     
 
 
@@ -48,6 +49,12 @@ def logined_handler(request):
     th = TreeHandler(get_internal_wsgi_application(),request)
     return th.render_template('tree.html')
 
+@csrf_exempt
+def get_verify_code(request):
+    txt,img = get_code()
+    print "code is",txt
+    return HttpResponse(img,'image/png')
+
 
 
 
@@ -67,7 +74,7 @@ class RegisterView(FormView):
 @csrf_exempt
 def register(request):
     if request.method == 'POST':
-        #print "request --------------",request.__dict__
+        print "request --------------",request.__dict__
         if request.POST.get('login_btn',''):
             return HttpResponseRedirect('/admin/login/')
             

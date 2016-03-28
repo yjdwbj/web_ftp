@@ -25,5 +25,6 @@ urlpatterns = [
     #url(r'^login/',login),
     #url(r'^register/$',RegisterView.as_view(),name='register')
     url(r'^register/$',register),
+    url(r'^get_code/$',get_verify_code),
     #url(r'^tree(?P<path>(?:(?:/[^/]+)+|/?))', logined_handler),
 ]
