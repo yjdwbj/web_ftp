@@ -137,7 +137,7 @@ class FileTypeAdmin(admin.ModelAdmin):
     def delete_platform(self,request,queryset):
         pdir_list = set()
         for obj in queryset:
-            product = platform.product_name
+            product = obj.product_name
             product_dir  = '/'.join([settings.MEDIA_ROOT,request.user.email,product.name])
             pdir_list.add(product_dir)
             platform_dir  = '/'.join([settings.MEDIA_ROOT,request.user.email,product.name,obj.name])
