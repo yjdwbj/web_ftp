@@ -46,11 +46,7 @@ def index(request):
 @csrf_exempt
 def get_verify_code(request):
     txt,img = get_code()
-    print "code is",txt
-    import json
-    print "verify_code session",request.__dict__
     request.session[txt] = request.META['REMOTE_ADDR']
-    print "request",request.GET.__dict__
     return HttpResponse(img,'image/png')
 
 
@@ -74,7 +70,6 @@ def reset_password(request):
 def register(request):
     if request.method == 'POST':
         #print "request --------------",request.__dict__
-        print "session",request.session.__dict__
         if request.POST.get('login_btn',''):
             return HttpResponseRedirect('/admin/login/')
         if request.POST.get('reset_btn',''):

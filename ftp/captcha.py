@@ -235,7 +235,7 @@ def get_code():
 
 def make_text_image(width,height,x,y,size,th,text):
     img = Image.new("RGB",(width,height),(255,255,255))
-    font = ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeSans.ttf',size)
+    font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',size)
     #font = ImageFont.truetype(fp,size)
     draw = ImageDraw.Draw(img)
     draw.text((x,y),text,font = font,fill=255)

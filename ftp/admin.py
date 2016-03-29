@@ -21,7 +21,6 @@ from django.forms import FileInput,Select
 def update_json(product_dir):
 
     plist = glob("%s/*/*/*" % product_dir)
-    print "dir list",plist
     jdict = {}
     pdlen = len(product_dir)+1
     for item in plist:
@@ -73,7 +72,7 @@ class ProductAdmin(admin.ModelAdmin):
         obj.ftp_user = request.user
         obj.save()
         pdir = "/".join([settings.MEDIA_ROOT,request.user.email,obj.name])
-        print "create dir ",pdir
+        #print "create dir ",pdir
         if not os.path.exists(pdir):
             os.makedirs(pdir)
     
@@ -253,7 +252,7 @@ class VerionAdmin(admin.ModelAdmin):
         form.base_fields['target_name'].queryset = form.base_fields['target_name'].queryset.filter(product_name__in = pq)
         if obj:
             #form.base_fields['ver_name'].widget.attrs['readonly'] = True
-            print "base_fields type",type(form.base_fields)
+            #print "base_fields type",type(form.base_fields)
             
             for w in form.base_fields.values():
                 #if isinstance(w,FileInput):
