@@ -15,13 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin,auth
-from ftp import views
+from django.contrib.auth  import views
 from ftp.views import *
-from ftp.views import RegisterView
 
 urlpatterns = [
     url(r'^$',index),
+    url(r'^password_reset/$', views.password_reset, name='password_reset'),
+    url(r'^password_reset/done/$', views.password_reset_done, name='password_reset_done'),
+    url(r'^admin/login/$',login,name="login"),
     url(r'^admin/', admin.site.urls),
+    url(r'^reset_pwd/$',reset_password),
     #url(r'^login/',login),
     #url(r'^register/$',RegisterView.as_view(),name='register')
     url(r'^register/$',register),

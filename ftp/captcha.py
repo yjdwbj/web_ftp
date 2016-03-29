@@ -18,7 +18,6 @@ import matplotlib.font_manager as mf
 from scipy import ndimage
 from scipy.special import *
 from PIL import Image,ImageDraw,ImageFont,ImageFilter,ImageEnhance
-import redis
 import threading
 import time
 

@@ -6,47 +6,6 @@
 {% endblock %}
 {% block content %}
 
-<script >
-    var $ = django.jQuery;
-    $(document).ready(function(){
-            $.get("/get_code/",function(ret){
-                var $img = $("#code_image");
-                var $loader = $(document.getElementById('verify_code'));
-                $img.attr('src','data:image/png;base64,' + ret  )
-                if($img.complete){
-                    $loader.trigger('load');
-                    }
-                })
-            });
-        
-    
-
-    $(document).ready(function(){
-        $("#refresh").click(function(){
-            var $img = $("#code_image");
-            $.get("/get_code/",function(ret){
-                var $loader = $(document.getElementById('verify_code'));
-                $img.attr('src','data:image/png;base64,' + ret  )
-                if($img.complete){
-                    $loader.trigger('load');
-                    }
-                })
-            });
-        $("#code_image").click(function(){
-            var $img = $("#code_image");
-            $.get("/get_code/",function(ret){
-                var $loader = $(document.getElementById('verify_code'));
-                $img.attr('src','data:image/png;base64,' + ret  )
-                if($img.complete){
-                    $loader.trigger('load');
-                    }
-                })
-            });
-            
-        });
-
-</script>
-
 <div class="container">
   {% if form.non_field_errors %}
   <div class="messages">
@@ -60,61 +19,67 @@
     <div class="panel panel-default">
       <div class="panel-body">
         <form action="" method="post">{% csrf_token %}
-          <div class="form-group {% if form.UserName.errors %} has-error {% endif %}">
-            <label for="">{{ form.UserName.label }}</label>
-            {% if form.UserName.errors %}
+          <div class="form-group {% if form.username.errors %} has-error {% endif %}">
+            <label for="">{{ form.username.label }}</label>
+            {% if form.username.errors %}
             <span class="text-danger pull-right">{{ form.UserrNme.errors }}</span>
             {% endif %}
-            {{ form.UserName }}
-            <p class="help">{{ form.UserName.help_text }}</p>
+            {{ form.username }}
+            <p class="help">{{ form.username.help_text }}</p>
           </div>
-          <div class="form-group {% if form.Email.errors %} has-error {% endif %}">
-            <label for="">{{ form.Email.label }}</label>
-            {% if form.Email.errors %}
-            <span class="text-danger pull-right">{{ form.Email.errors }}</span>
+          <div class="form-group {% if form.email.errors %} has-error {% endif %}">
+            <label for="">{{ form.email.label }}</label>
+            {% if form.email.errors %}
+            <span class="text-danger pull-right">{{ form.email.errors }}</span>
             {% endif %}
-            {{ form.Email }}
-            <p class="help">{{ form.Email.help_text }}</p>
+            {{ form.email }}
+            <p class="help">{{ form.email.help_text }}</p>
           </div>
-          <div class="form-group {% if form.Password.errors %} has-error {% endif %}">
-            <label for="">{{ form.Password.label }}</label>
-            {% if form.Password.errors %}
-            <span class="text-danger pull-right">{{ form.Password.errors }}</span>
+          <div class="form-group {% if form.password.errors %} has-error {% endif %}">
+            <label for="">{{ form.password.label }}</label>
+            {% if form.password.errors %}
+            <span class="text-danger pull-right">{{ form.password.errors }}</span>
             {% endif %}
-            {{ form.Password }}
-            <p class="help">{{ form.Password.help_text }}</p>
+            {{ form.password }}
+            <p class="help">{{ form.password.help_text }}</p>
           </div>
-          <div class="form-group {% if form.Confirm_password.errors %} has-error {% endif %}">
-            <label for="">{{ form.Confirm_password.label }}</label>
-            {% if form.Confirm_password.errors %}
-            <span class="text-danger pull-right">{{ form.Confirm_password.errors }}</span>
+          <div class="form-group {% if form.confirm_password.errors %} has-error {% endif %}">
+            <label for="">{{ form.confirm_password.label }}</label>
+            {% if form.confirm_password.errors %}
+            <span class="text-danger pull-right">{{ form.confirm_password.errors }}</span>
             {% endif %}
-            {{ form.Confirm_password }}
+            {{ form.confirm_password }}
           </div>
-          <div class="form-group {% if form.CommpanyName.errors %} has-error {% endif %}">
-            <label for="">{{ form.CommpanyName.label }}</label>
-            {% if form.CommpanyName.errors %}
-            <span class="text-danger pull-right">{{ form.CommpanyName.errors }}</span>
+          <div class="form-group {% if form.commpanyname.errors %} has-error {% endif %}">
+            <label for="">{{ form.commpanyname.label }}</label>
+            {% if form.commpanyname.errors %}
+            <span class="text-danger pull-right">{{ form.commpanyname.errors }}</span>
             {% endif %}
-            {{ form.CommpanyName }}
-            <p class="help">{{ form.CommpanyName.help_text }}</p>
+            {{ form.commpanyname }}
+            <p class="help">{{ form.commpanyname.help_text }}</p>
           </div>
-          <div class="form-group {% if form.Phone.errors %} has-error {% endif %}">
-            <label for="">{{ form.Phone.label }}</label>
-            {% if form.Phone.errors %}
-            <span class="text-danger pull-right">{{ form.Phone.errors }}</span>
+          <div class="form-group {% if form.phone.errors %} has-error {% endif %}">
+            <label for="">{{ form.phone.label }}</label>
+            {% if form.phone.errors %}
+            <span class="text-danger pull-right">{{ form.phone.errors }}</span>
             {% endif %}
-            {{ form.Phone }}
-            <p class="help">{{ form.Phone.help_text }}</p>
+            {{ form.phone }}
+            <p class="help">{{ form.phone.help_text }}</p>
           </div>
-          <div class="form-group"  id="verify_code">
-              <label >验证码：</label>
-              <input name="captcha" maxlength="6" size="6"  type="text" />
+         {% block verify_code %}
+          <div id="verify_code"  {% if form.captcha.errors %} has-error {% endif %}>
+            <label for="">{{ form.captcha.label }}</label>
+            {% if form.captcha.errors %}
+            <span >{{ form.captcha.errors }}</span>
+            {% endif %}
+            {{ form.captcha }}
               <img title=刷新验证码 id="code_image" src=""/>
               <a id="refresh" href="#" >看不清，换一张</a>
           </div>
+          {% endblock %}
           <input name =""  type="submit" class="btn btn-default" value="注册">
           <input name ="login_btn" button type="submit" class="btn btn-login" value="登 录">
+          <input name ="reset_btn" button type="submit" class="btn reset_btn" value="找回密码">
         </form>
       </div>
     </div>

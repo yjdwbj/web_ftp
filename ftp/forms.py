@@ -2,6 +2,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm,PasswordResetForm
 from django.conf import settings
 from .models import FtpUser,FileVer,Product
 from django.contrib.auth.forms import UserCreationForm,UserChangeForm
@@ -37,6 +38,25 @@ class FileVerionForm(forms.ModelForm):
             self.fields['product_name'].get_queryset = Product.objects.filter(ftp_user=None)
 
 
+class ResetPassword(PasswordResetForm):
+    email = forms.EmailField(
+            label=u'邮箱',
+            help_text=u'邮箱可用于登录，最重要的是需要邮箱来找回密码',
+            max_length = 50,
+            initial='',
+            #widget=forms.TextInput(attrs={'class':'form-control'}),
+            )
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(ResetPassword, self).__init__(*args, **kwargs)
+
+        
+    def clean(self):
+        cleaned_data = super(ResetPassword, self).clean()
+        user = FtpUser.objects.filter(email = cleaned_data.get('email'))
+        if len(user) == 0:
+            raise forms.ValidationError(u'没有查询到此邮箱注册记录，请重新输入')
+
 
 
 
@@ -46,41 +66,49 @@ class RegisterForm(forms.Form):
 #    initial='',
 #    widget=forms.TextInput(attrs={'class':'form-control'}),
 #    )
-    Password = forms.CharField(
+    password = forms.CharField(
             label=u'密码',
             help_text=u'密码长度 6 ~ 12',
             min_length=6,max_length=12,
             widget= forms.PasswordInput(attrs={'class':'form-control'}),
             )
-    Confirm_password = forms.CharField(
+    confirm_password = forms.CharField(
             label=u'确认密码',
             min_length=6,max_length=12,
             widget= forms.PasswordInput(attrs={'class':'form-control'}),
             )
-    CommpanyName = forms.CharField(
+    commpanyname = forms.CharField(
             label=u'公司名称',
             min_length=4,max_length=50,
-            widget = forms.TextInput(attrs={'class':'form-contron'}),
+            widget = forms.TextInput(attrs={'class':'form-control'}),
             )
 
-    Email = forms.EmailField(
+    email = forms.EmailField(
             label=u'邮箱',
             help_text=u'邮箱可用于登录，最重要的是需要邮箱来找回密码',
             max_length = 50,
             initial='',
             widget=forms.TextInput(attrs={'class':'form-control'}),
             )
-    Phone = forms.CharField(
+    phone = forms.CharField(
             label=u'公司电话',
             min_length=11,max_length=15,
             widget = forms.TextInput(attrs={'class':'form-control'}),
             )
+
+    captcha = forms.CharField(
+            label=u'验证码',
+            min_length=6,max_length=6,
+            widget = forms.TextInput(attrs={'class':'form-control','size':'20'}),
+            )
+
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(RegisterForm, self).__init__(*args, **kwargs)
+        self.fields['captcha'].initial=''
 
     def clean_username(self):
-        username = self.cleaned_data['CommpanyName']
+        username = self.cleaned_data['commpanyname']
         if ' ' in username:
             raise forms.ValidationError(u'名称中包含空格')
         if '@' in username:
@@ -100,17 +128,28 @@ class RegisterForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(RegisterForm, self).clean()
-        password = cleaned_data.get('Password')
-        confirm_password = cleaned_data.get('Ponfirm_password')
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
         if password and confirm_password:
             if password != confirm_password:
                 raise forms.ValidationError(u'两次密码输入不一致，请重新输入')
+        captcha = cleaned_data.get('captcha')
+        if not captcha or len(captcha) != 6:
+            raise forms.ValidationError(u'验证码不正确')
+
+            
+    def get_captcha(self):
+        print "form dict",self.__dict__
+        code = self.data['captcha']
+        if not code or len(code) != 6:
+            raise forms.ValidationError(u'请输入正确的验证码')
+        return code
 
     def save(self):
-        email = self.cleaned_data['Email']
-        password = self.cleaned_data['Password']
-        company = self.cleaned_data['CommpanyName']
-        phone = self.cleaned_data['Phone']
+        email = self.cleaned_data['email']
+        password = self.cleaned_data['password']
+        company = self.cleaned_data['commpanyname']
+        phone = self.cleaned_data['phone']
         d = {'name':company,'reg_ip':self.request.META.get('REMOTE_ADDR'),'phone_num':phone}
         user = FtpUser.objects.create_user(email,password,**d)
         user.save()
@@ -134,3 +173,46 @@ class RegisterForm(forms.Form):
         return forms.Media(js=[static('admin/js/%s' % url) for url in js])
 
 
+class CustomAuthForm(AuthenticationForm):
+    
+    captcha = forms.CharField(
+            label=u'验证码',
+            min_length=6,max_length=6,
+            widget = forms.TextInput(attrs={'class':'form-control','size':'20'}),
+            )
+
+    def __init__(self,request=None,*args,**kwargs):
+        super(CustomAuthForm,self).__init__(*args,**kwargs)
+
+    def clean(self):
+        captcha = self.cleaned_data.get('captcha')
+        if not captcha or len(captcha) != 6:
+            raise forms.ValidationError(
+                    u'请输入正确的验证码'
+                    )
+        return super(CustomAuthForm,self).clean()
+            #self.confirm_login_allowed(self.user_cache)
+
+        #return self.cleaned_data
+
+    def get_captcha(self):
+        print "form dict",self.__dict__
+        code = self.data['captcha']
+        if not code or len(code) != 6:
+            self.add_error('captcha',u'请输入正确的验证码')
+        return code
+
+    @property
+    def media(self):
+        extra = '' if settings.DEBUG else '.min'
+        js = [
+            'core.js',
+            'vendor/jquery/jquery%s.js' % extra,
+            'jquery.init.js',
+            'admin/RelatedObjectLookups.js',
+            'actions%s.js' % extra,
+            'urlify.js',
+            'prepopulate%s.js' % extra,
+            'vendor/xregexp/xregexp.min.js',
+        ]
+        return forms.Media(js=[static('admin/js/%s' % url) for url in js])
