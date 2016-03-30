@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 USE_I18N = False
 
+SESSION_SERIALIZER='django.contrib.sessions.serializers.PickleSerializer'
 
 
 # Application definition
@@ -61,10 +62,13 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'ftp.admin.AutoLogout',
 ]
 
 ROOT_URLCONF = 'firmware_upgrade.urls'
+AUTO_LOGOUT_DELAY = 5
 
+SESSION_EXPRIRE_AT_BROWSER_CLOSE = True
 
 TEMPLATES = [
     {

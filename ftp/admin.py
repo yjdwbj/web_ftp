@@ -18,6 +18,25 @@ from django.contrib.auth import get_permission_codename
 from django.forms import FileInput,Select
 
 
+from datetime import datetime,timedelta
+from django.conf import settings
+from django.contrib import auth
+
+
+class AutoLogout:
+    def process_request(self,request):
+        if not request.user.is_authenticated():
+            return
+        try:
+            if datetime.now() - request.session['last_login'] > timedelta(0,settings.AUTO_LOGOUT_DELAY * 60,0):
+                auth.logout(request)
+                del request.session['last_touch']
+                return
+        except KeyError:
+            return
+        request.session['last_touch'] = datetime.now()
+
+
 def update_json(product_dir):
 
     plist = glob("%s/*/*/*" % product_dir)
@@ -197,7 +216,7 @@ class FileTypeAdmin(admin.ModelAdmin):
 class VerionAdmin(admin.ModelAdmin):
     #actions = None
 
-    list_display = ('get_product','get_platform','ver_name','commit')
+    list_display = ('get_product','get_platform','ver_name','date','commit')
     #ordering = ('',)
 
 
@@ -299,7 +318,7 @@ class VerionAdmin(admin.ModelAdmin):
         return unicode(obj.target_name.product_name.name)
     get_product.short_description = u'产品名称'
     get_platform.short_description=u'平台类型'
-    delete_version.short_description = u'删除'
+    delete_version.short_description = u'删除选择的行'
 
             
 

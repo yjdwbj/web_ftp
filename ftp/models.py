@@ -51,6 +51,7 @@ class FtpUser(AbstractBaseUser,PermissionsMixin):
     is_active = models.BooleanField(default=False,verbose_name=u"激活")
     is_staff = models.BooleanField(default=False,verbose_name=u"登录管理")
     #is_superuser = models.BooleanField(default=False,verbose_name=u"超级用户")
+    
     date_joined = models.DateTimeField(default=timezone.now,verbose_name=u'注册时间')
 
     USERNAME_FIELD = 'email'
@@ -128,7 +129,7 @@ class FileVer(models.Model):
     target_name = models.ForeignKey(FileType,on_delete=models.CASCADE,verbose_name=u'平台类型')
     ver_name = models.CharField(max_length=256,blank=False,verbose_name=u'版本')
     file_name= models.FileField(upload_to = get_upload_dir,max_length=1024,blank=False,verbose_name=u'文件名',help_text=u'文件大小不能超过10M')
-    
+    date = models.DateTimeField(default=timezone.now,editable=False,blank=False,verbose_name=u'创建时间')
     commit = models.TextField(max_length=1024,verbose_name=u'备注')
 
     def __unicode__(self):

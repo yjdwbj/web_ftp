@@ -25,7 +25,7 @@ import time
 #flen = len(flst)-1
 
 
-WIDTH = 96
+WIDTH = 100
 HEIGHT = 26
 FONT_SIZE = 28
 
