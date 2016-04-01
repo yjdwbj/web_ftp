@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 USE_I18N = False
+USE_I10N = False
 
 SESSION_SERIALIZER='django.contrib.sessions.serializers.PickleSerializer'
 
@@ -68,6 +69,7 @@ ROOT_URLCONF = 'firmware_upgrade.urls'
 AUTO_LOGOUT_DELAY = 5
 
 SESSION_EXPRIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 1*60
 
 TEMPLATES = [
     {
