@@ -70,11 +70,6 @@ def reset_password(request):
 def register(request):
     if request.method == 'POST':
         #print "request --------------",request.__dict__
-        if request.POST.get('login_btn',''):
-            return HttpResponseRedirect('/admin/login/')
-        if request.POST.get('reset_btn',''):
-            return HttpResponseRedirect('/password_reset/')
-            
             
         form = RegisterForm(request.POST,request=request)
         remote_ip = request.session.get(form.get_captcha(),'')
@@ -104,16 +99,12 @@ def login(request,template_name='admin/login.html',
             request.GET.get(redirect_field_name,''))
 
     if request.method == 'POST':
-        if request.POST.get('reset_btn',''):
-            return HttpResponseRedirect('/password_reset/')
-        if request.POST.get('reg_btn',''):
-            return HttpResponseRedirect('/register/')
         form = authentication_form(request,data=request.POST)
         if form.is_valid():
             remote_ip = request.session.get(form.get_captcha(),'')
             if remote_ip:
-                if not is_safe_url(url=redirect_to, host=request.get_host()):
-                    redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
+                #if not is_safe_url(url=redirect_to, host=request.get_host()):
+                #    redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
 
                 # Okay, security check complete. Log the user in.
                 auth_login(request, form.get_user())

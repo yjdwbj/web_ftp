@@ -307,7 +307,7 @@ msgstr ""
 
 #: templates/admin/index.html:47
 msgid "You don't have permission to edit anything."
-msgstr ""
+msgstr "你无权限修改任何东西"
 
 #: templates/admin/index.html:55
 msgid "Recent Actions"
@@ -545,6 +545,42 @@ msgstr "电子邮件地址"
 msgid "Reset my password"
 msgstr "新密码"
 
+
+
+#, python-format
+msgid "Your password must contain at least %(min_length)d character."
+msgid_plural "Your password must contain at least %(min_length)d characters."
+msgstr[0] "新的密码长度必须大于%(min_length)d个字符"
+
+
+msgid "Your password can't be too similar to your other personal information."
+msgstr "新的密码不应该与您的其它用户密相同"
+
+
+
+
+msgid "Your password can't be a commonly used password."
+msgstr "新密码不应使用常用的密码"
+
+
+
+
+#, python-format
+msgid ""
+"This password is too short. It must contain at least %(min_length)d "
+"character."
+msgid_plural ""
+"This password is too short. It must contain at least %(min_length)d "
+"characters."
+msgstr[0] "新密码太短，必须大于%(min_length)d个字符"
+
+
+
+msgid "This password is entirely numeric."
+msgstr "新密不能全部使用数字"
+
+
+
 #~ msgid "Personal info"
 #~ msgstr "个人信息"
 
@@ -709,8 +745,8 @@ msgstr "<a href=\"../password/\">更改密码</a>."
 #~ msgid "users"
 #~ msgstr "用户"
 
-#~ msgid "Your password can't be entirely numeric."
-#~ msgstr "密码不能全部为数字"
+msgid "Your password can't be entirely numeric."
+msgstr "密码不能全部为数字"
 
 #~ msgid "Password reset on %(site_name)s"
 #~ msgstr "重置 %(site_name)s 的密码"

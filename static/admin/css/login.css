@@ -33,6 +33,12 @@ body.login {
 
 .login #content-main {
     width: 100%;
+    padding-bottom: none;
+}
+
+.login #login-form {
+    width: 100%;
+    border-bottom: none;
 }
 
 .login .form-row {
@@ -50,10 +56,19 @@ body.login {
     color: #333;
 }
 
-.login .form-row #id_username, .login .form-row #id_password {
+.login .form-row #id_username, .login .form-row #id_password  {
     clear: both;
     padding: 8px;
     width: 100%;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+.login .form-row #verify_code {
+    clear: both;
+    padding: 10px;
+    width: 5%;
     -webkit-box-sizing: border-box;
        -moz-box-sizing: border-box;
             box-sizing: border-box;
@@ -76,3 +91,47 @@ body.login {
 .login .password-reset-link {
     text-align: center;
 }
+
+.login .login-row {
+    clear: both;
+    margin: 0;
+    border: 10px;
+    text-align: center;
+}
+
+.login .button-row #id_reset {
+    color: red;
+}
+
+.login .buttom-row input {
+    background: none;
+    color: red;
+
+}
+
+.login .buttom-row {
+    clear: both;
+    padding: 2em 0 0 0.4em;
+    margin: 0;
+    background: none;
+    text-align: right;
+}
+
+.login .other-link {
+    clear: both;
+    padding: 2em 0 0 0.4em;
+    margin: 0;
+    background: none;
+    text-align: right;
+}
+
+.login .btn-register {
+    clear: both;
+    margin: 0;
+    text-align: center;
+}
+
+
+
+
+

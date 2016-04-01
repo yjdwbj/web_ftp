@@ -62,7 +62,6 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'ftp.admin.AutoLogout',
 ]
 
 ROOT_URLCONF = 'firmware_upgrade.urls'
@@ -141,3 +140,13 @@ USE_TZ = True
 
 STATIC_ROOT =  os.path.join(BASE_DIR )
 STATIC_URL = '/static/'
+
+
+EMAIL_HOST = 'stmp.126.com'
+EMAIL_HOST_PASSWORD = 'lcy123testftp'
+EMAIL_HOST_USER='lcy_test_ftp@126.com'
+EMAIL_PORT = 25
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
+
+

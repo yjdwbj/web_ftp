@@ -95,15 +95,12 @@
     {{ form.password.label_tag }} {{ form.password }}
     <input type="hidden" name="next" value="{{ next }}" />
   </div>
-  {% block verify_code %}
   <div class="form-row" id="verify_code" >
     {{ form.captcha.errors }}
     {{ form.captcha.label_tag }} {{ form.captcha}}
-              <img title=刷新验证码 id="code_image" src=""/>
-              <a id="refresh" href="#" >看不清，换一张</a>
+              <img title=刷新验证码 id="code_image" src=""/> <a id="refresh" href="#" >看不清，换一张</a>
     <input type="hidden" name="next" value="{{ next }}" />
   </div>
-  {% endblock %}
   
   {% url 'admin_password_reset' as password_reset_url %}
   {% if password_reset_url %}
@@ -111,10 +108,13 @@
     <a href="{{ password_reset_url }}">{% trans 'Forgotten your password or username?' %}</a>
   </div>
   {% endif %}
-      <span><input type="submit" value="登录" />
-    <label>&nbsp;</label><input name ="reset_btn" type="submit" class="btn reset_btn" value="找回密码"/>
-    <label>&nbsp;</label><input name ="reg_btn"  type="submit" class="btn btn-default" value="注册"/>
-    </span>
+  <div class="login-row">
+      <input type="submit" class='login-btn' value="登录" />
+  <div>
+    <div  class='buttom-row'>
+        <a href='/password_reset/' >找回密码</a>
+        <a href='/register/' >注册</a>
+    </div>
 </form>
 
 <script type="text/javascript">

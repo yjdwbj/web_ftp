@@ -16,25 +16,15 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_permission_codename
 from django.forms import FileInput,Select
+from django.contrib.admin import SimpleListFilter
 
 
 from datetime import datetime,timedelta
 from django.conf import settings
 from django.contrib import auth
+from .sites import FtpSite
+from django.conf.urls import url
 
-
-class AutoLogout:
-    def process_request(self,request):
-        if not request.user.is_authenticated():
-            return
-        try:
-            if datetime.now() - request.session['last_login'] > timedelta(0,settings.AUTO_LOGOUT_DELAY * 60,0):
-                auth.logout(request)
-                del request.session['last_touch']
-                return
-        except KeyError:
-            return
-        request.session['last_touch'] = datetime.now()
 
 
 def update_json(product_dir):
@@ -57,10 +47,17 @@ def update_json(product_dir):
 class PlatormInline(admin.TabularInline):
     model = FileType
 
+
+
 class ProductAdmin(admin.ModelAdmin):
+    #list_display = ('name','get_platform_list')
     list_display = ('name',)
+    #list_display_links= ('get_platform_list',)
 #    inlines = [PlatormInline,]
     actions = ['delete_product']
+    #list_filter = (ProductSimpleFilter,)
+
+
 
 
     def delete_product(self,request,queryset):
@@ -94,7 +91,15 @@ class ProductAdmin(admin.ModelAdmin):
         #print "create dir ",pdir
         if not os.path.exists(pdir):
             os.makedirs(pdir)
-    
+
+    def get_platform_list(self,obj):
+        lst = FileType.objects.filter(product_name__name =obj.name)
+        return [x.name for x in lst]
+
+
+
+
+    get_platform_list.short_description=u'平台名称' 
     delete_product.short_description = u'选择删除产品'
 
 
@@ -125,6 +130,7 @@ class FtpUserAdmin(UserAdmin):
     list_display = ('name','email','is_active','is_staff','reg_ip','date_joined','last_login')
     search_fields = ('email','name')
     ordering = ('email',)
+    change_list_template=("admin/index.html",)
 
     #def has_delete_permission(self,request,obj=None):
     #    return False
@@ -149,8 +155,11 @@ class VerionInline(admin.TabularInline):
 class FileTypeAdmin(admin.ModelAdmin):
     #actions = None
     list_display = ('get_product','name',)
+    #list_display_links = ('name',)
+    list_display_links = None
     #inlines = [VerionInline]
     actions = ['delete_platform']
+    list_filter = ('name',)
     
     def delete_platform(self,request,queryset):
         pdir_list = set()
@@ -210,14 +219,29 @@ class FileTypeAdmin(admin.ModelAdmin):
     
 
 
-    
+class FileVersionSimpleFilter(SimpleListFilter):
+    title = u'产品名'
+    parameter_name = 'product'
 
+    def lookups(self,request,model_admin):
+        plist =list(set([(x.id,x.name) for x in Product.objects.filter(ftp_user=request.user)]))
+        return plist
+
+    def queryset(self,request,queryset):
+        if self.value():
+            #print "self value",self.value()
+            pq = Product.objects.filter(ftp_user=request.user)
+            tn = FileType.objects.filter(product_name__id  = self.value()).order_by("desc")
+            return FileVer.objects.filter(target_name__in = tn)
+        else:
+            return queryset
 
 class VerionAdmin(admin.ModelAdmin):
     #actions = None
 
     list_display = ('get_product','get_platform','ver_name','date','commit')
     #ordering = ('',)
+    list_filter = (FileVersionSimpleFilter,)
 
 
     actions = ['delete_version']
@@ -269,6 +293,8 @@ class VerionAdmin(admin.ModelAdmin):
         tn = FileType.objects.filter(product_name__in = pq)
         #form.base_fields['name'].queryset = pq
         form.base_fields['target_name'].queryset = form.base_fields['target_name'].queryset.filter(product_name__in = pq)
+        form.base_fields['file_name'].widget.attrs['name'] = u'上传文件'
+        
         if obj:
             #form.base_fields['ver_name'].widget.attrs['readonly'] = True
             #print "base_fields type",type(form.base_fields)
@@ -291,7 +317,7 @@ class VerionAdmin(admin.ModelAdmin):
             return qs
         if qs:
             pq = Product.objects.filter(ftp_user=request.user)
-            tn = FileType.objects.filter(product_name__in = pq)
+            tn = FileType.objects.filter(product_name__in = pq).order_by("desc")
             return qs.filter(target_name__in=tn)
 
         return qs
@@ -332,8 +358,14 @@ class VerionAdmin(admin.ModelAdmin):
 
 
 #admin.site.register(Commpany)
-admin.site.register(FtpUser,FtpUserAdmin)
+#admin.site.register(FtpUser,FtpUserAdmin)
+#ftp_site = FtpSite()
+#ftp_site.register(FtpUser,FtpUserAdmin)
+#ftp_site.register(Product,ProductAdmin)
+#ftp_site.register(FileType,FileTypeAdmin)
+#ftp_site.register(FileVer,VerionAdmin)
 #admin.site.register(FtpUser)
+setattr(admin.site,'site_title',u'FTP管理')
 admin.site.register(Product,ProductAdmin)
 admin.site.register(FileType,FileTypeAdmin)
 admin.site.register(FileVer,VerionAdmin)

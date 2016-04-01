@@ -76,16 +76,18 @@ class RegisterForm(forms.Form):
             label=u'确认密码',
             min_length=6,max_length=12,
             widget= forms.PasswordInput(attrs={'class':'form-control'}),
+            help_text=u'密码长度 6 ~ 12,两次输入必须一样',
             )
     commpanyname = forms.CharField(
             label=u'公司名称',
             min_length=4,max_length=50,
             widget = forms.TextInput(attrs={'class':'form-control'}),
+            help_text=u'请填写贵公司名，方便我们工作人审核',
             )
 
     email = forms.EmailField(
             label=u'邮箱',
-            help_text=u'邮箱可用于登录，最重要的是需要邮箱来找回密码',
+            help_text=u'邮箱可用于登录，最重要的是需要它来找回密码',
             max_length = 50,
             initial='',
             widget=forms.TextInput(attrs={'class':'form-control'}),
@@ -94,12 +96,13 @@ class RegisterForm(forms.Form):
             label=u'公司电话',
             min_length=11,max_length=15,
             widget = forms.TextInput(attrs={'class':'form-control'}),
+            help_text=u'请填写有效的固话或手机，方便我们联系到您',
             )
 
     captcha = forms.CharField(
             label=u'验证码',
             min_length=6,max_length=6,
-            widget = forms.TextInput(attrs={'class':'form-control','size':'20'}),
+            widget = forms.TextInput(attrs={'class':'form-verify'}),
             )
 
     def __init__(self, *args, **kwargs):
@@ -178,7 +181,7 @@ class CustomAuthForm(AuthenticationForm):
     captcha = forms.CharField(
             label=u'验证码',
             min_length=6,max_length=6,
-            widget = forms.TextInput(attrs={'class':'form-control','size':'20'}),
+            widget = forms.TextInput(attrs={'class':'form-verify'}),
             )
 
     def __init__(self,request=None,*args,**kwargs):
