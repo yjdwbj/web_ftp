@@ -14,9 +14,12 @@ from .forms import FtpUserChangeForm,FtpUserCreationForm,FileVerionForm
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.utils.html import format_html
 from django.contrib.auth import get_permission_codename
 from django.forms import FileInput,Select
 from django.contrib.admin import SimpleListFilter
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.urlresolvers import resolve
 
 
 from datetime import datetime,timedelta
@@ -46,16 +49,22 @@ def update_json(product_dir):
 
 class PlatormInline(admin.TabularInline):
     model = FileType
+    show_change_link = False
 
 
 
 class ProductAdmin(admin.ModelAdmin):
     #list_display = ('name','get_platform_list')
-    list_display = ('name',)
+    #list_display = ('name',)
+    list_display =('get_filever_of_product',)
+    #list_display = ('name','filter_link')
     #list_display_links= ('get_platform_list',)
-#    inlines = [PlatormInline,]
+    inlines = [PlatormInline,]
     actions = ['delete_product']
     #list_filter = (ProductSimpleFilter,)
+    ref_url = ''
+    domain = ''
+    appname = ''
 
 
 
@@ -75,6 +84,10 @@ class ProductAdmin(admin.ModelAdmin):
         return actions
 
     def get_list_display_links(self,request,list_display):
+        self.ref_url = request.build_absolute_uri(request.get_full_path()).split('//')[1]
+        self.domain = get_current_site(request).name
+        self.appname = self.model._meta.app_label
+        print "self admin each request",self.domain,self.appname
         if self.list_display_links or self.list_display_links is None or not list_display:
             return self.list_display_links
         else:
@@ -92,9 +105,22 @@ class ProductAdmin(admin.ModelAdmin):
         if not os.path.exists(pdir):
             os.makedirs(pdir)
 
+
+
     def get_platform_list(self,obj):
         lst = FileType.objects.filter(product_name__name =obj.name)
         return [x.name for x in lst]
+
+    def get_filever_of_product(self,obj):
+        print "self ",self.__dict__
+        print "obj",obj.__dict__
+        #url = 'http://%s/admin/%s/filever/?product=%d' % (self.ref_url.split('/')[0],settings.app,obj.id)
+        #print "url is",url
+        print "domain",self.domain,self.appname
+        #return format_html('<a href=%s>%s</a>' % (url,obj.name))
+        return format_html('<a href="http://%s/admin/%s/filever/?product=%d" >%s</a>' 
+                % (self.domain,self.appname,obj.id,obj.name))
+    get_filever_of_product.short_description = u'版本列表'
 
 
 
@@ -364,7 +390,7 @@ class VerionAdmin(admin.ModelAdmin):
 #ftp_site.register(Product,ProductAdmin)
 #ftp_site.register(FileType,FileTypeAdmin)
 #ftp_site.register(FileVer,VerionAdmin)
-#admin.site.register(FtpUser)
+admin.site.register(FtpUser)
 setattr(admin.site,'site_title',u'FTP管理')
 admin.site.register(Product,ProductAdmin)
 admin.site.register(FileType,FileTypeAdmin)

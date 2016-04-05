@@ -15,7 +15,7 @@
   data-admin-utc-offset="{% now "Z" %}">
 
 <!-- Container -->
-<div id="container">
+<div id="container">{% csrf_token %}
 
     {% if not is_popup %}
     <!-- Header -->

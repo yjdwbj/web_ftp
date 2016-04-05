@@ -30,7 +30,9 @@ USE_I18N = False
 USE_I10N = False
 
 SESSION_SERIALIZER='django.contrib.sessions.serializers.PickleSerializer'
-
+#SESSION_COOKIE_SECURE = True
+#CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 600
 
 # Application definition
 PASSWORD_HASHERS = (
@@ -69,7 +71,7 @@ ROOT_URLCONF = 'firmware_upgrade.urls'
 AUTO_LOGOUT_DELAY = 5
 
 SESSION_EXPRIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 1*60
+SESSION_COOKIE_AGE = 5*60
 
 TEMPLATES = [
     {
@@ -127,8 +129,11 @@ MEDIA_ROOT='/opt/data/ftproot'
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 LANGUAGE_CODE = 'zh_CN'
+LOGIN_URL = '/admin/login/'
 
 TIME_ZONE = 'Asia/Shanghai'
+USE_TZ = True
+
 
 USE_I18N = True
 
@@ -144,10 +149,12 @@ STATIC_ROOT =  os.path.join(BASE_DIR )
 STATIC_URL = '/static/'
 
 
-EMAIL_HOST = 'stmp.126.com'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.com'
 EMAIL_HOST_PASSWORD = 'lcy123testftp'
-EMAIL_HOST_USER='lcy_test_ftp@126.com'
+EMAIL_HOST_USER='lcy1985@yandex.com'
 EMAIL_PORT = 25
+EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
 

@@ -6,7 +6,9 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,PermissionsMixin
 from django.utils.translation import ugettext_lazy as _
+from django.template.defaultfilters import filesizeformat
 from django.utils import timezone
+from django.utils.html import format_html
 from datetime import datetime
 
 # Create your models here.
@@ -84,6 +86,12 @@ class Product(models.Model):
     def __unicode__(self):
         return self.name
 
+    def filter_link(self):
+        url = "?product=%d" % self.id
+        return format_html('<a href=%s>%s</a>' % (url,self.name))
+    
+    filter_link.allow_tags = True
+
 class FileType(models.Model):
     class Meta:
         verbose_name = u"平台类型"
@@ -115,6 +123,30 @@ def get_upload_dir(req,filename):
     return filepath
     
 
+
+class CustomFileField(models.FileField):
+    def __init__(self,*args,**kwargs):
+        self.blacklist =kwargs.pop("blacklist")
+        self.max_upload_size = kwargs.pop("max_upload_size")
+        super(CustomFileField,self).__init__(*args,**kwargs)
+
+    def clean(self,*args,**kwargs):
+        data = super(CutsomFileField,self).clean(*args,**kwargs)
+        file = data.file
+        try:
+            content_type = file.content_type
+            if content_type in self.blacklist:
+                raise forms.ValidationError(_(u'文件类型不支持'))
+            else:
+                if file._size > self.max_upload_size:
+                    raise forms.ValidationError(_(u'文件超过最大上传限制%s' %
+                                        filesizeformat(self.max_upload_size)))
+        except AttributeError:
+            pass
+        return data
+
+
+
 class FileVer(models.Model):
     class Meta:
         verbose_name = u'版本列表'
@@ -128,11 +160,19 @@ class FileVer(models.Model):
     #target_name = models.ForeignKey(FileType,on_delete=models.CASCADE,verbose_name=u'文件类型')
     target_name = models.ForeignKey(FileType,on_delete=models.CASCADE,verbose_name=u'平台类型')
     ver_name = models.CharField(max_length=256,blank=False,verbose_name=u'版本')
-    file_name= models.FileField(upload_to = get_upload_dir,max_length=1024,blank=False,verbose_name=u'文件名',help_text=u'文件大小不能超过10M')
+    #file_name= models.FileField(upload_to = get_upload_dir,max_length=1024,blank=False,verbose_name=u'文件名',help_text=u'文件大小不能超过10M,不能上传txt文件')
+    file_name= CustomFileField(blacklist='txt',max_upload_size=10*1024*1024,
+                                upload_to = get_upload_dir,max_length=1024,
+                                blank=False,verbose_name=u'文件名',
+                                help_text=u'文件大小不能超过10M,不能上传txt文件')
     date = models.DateTimeField(default=timezone.now,editable=False,blank=False,verbose_name=u'创建时间')
     commit = models.TextField(max_length=1024,verbose_name=u'备注')
 
     def __unicode__(self):
         return self.ver_name
+
+
+
+
 
 

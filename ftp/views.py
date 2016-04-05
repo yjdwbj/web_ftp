@@ -27,6 +27,9 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
 from django.views.decorators.debug import sensitive_post_parameters
 from .captcha import get_code
+
+
+veriy_dict = {}
     
 
 
@@ -47,6 +50,11 @@ def index(request):
 def get_verify_code(request):
     txt,img = get_code()
     request.session[txt] = request.META['REMOTE_ADDR']
+    veriy_dict[txt] = request.META['REMOTE_ADDR']
+    print ""
+    print "get verify code",txt,request.session.__dict__
+    print "get verify code",txt,request.session
+    print ""
     return HttpResponse(img,'image/png')
 
 
@@ -73,12 +81,17 @@ def register(request):
             
         form = RegisterForm(request.POST,request=request)
         if form.is_valid():
-            if form.get_captcha in request.session:
+            txt = request.session.get(form.get_captcha(),None)
+            if txt:
                 form.save()
                 return HttpResponseRedirect('/admin/login/')
             else:
                 form.add_error('captcha',u'验证码不正确')
                 form.fields['captcha'].widget.attrs['value'] = ''
+                print "recv code",form.get_captcha()
+                print "request",request.session.__dict__
+                print "request session",request.session
+                print ""
                 return render_to_response('register.html',{'form': form})
         else:
             form.fields['captcha'].widget.attrs['value'] = ''
@@ -100,7 +113,8 @@ def login(request,template_name='admin/login.html',
     if request.method == 'POST':
         form = authentication_form(request,data=request.POST)
         if form.is_valid():
-            if form.get_captcha() in request.session:
+            txt = request.session.get(form.get_captcha(),None)
+            if txt:
                 #if not is_safe_url(url=redirect_to, host=request.get_host()):
                 #    redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
                 # Okay, security check complete. Log the user in.
@@ -111,6 +125,8 @@ def login(request,template_name='admin/login.html',
                 form.add_error('captcha',u'验证码不正确')
 
     else:
+        print ""
+        print "request session in GET",request.session
         form = authentication_form(request)
 
     current_site = get_current_site(request)
