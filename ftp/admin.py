@@ -59,7 +59,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_display =('get_filever_of_product',)
     #list_display = ('name','filter_link')
     #list_display_links= ('get_platform_list',)
-    inlines = [PlatormInline,]
+    #inlines = [PlatormInline,]
     actions = ['delete_product']
     #list_filter = (ProductSimpleFilter,)
     ref_url = ''
@@ -87,7 +87,7 @@ class ProductAdmin(admin.ModelAdmin):
         self.ref_url = request.build_absolute_uri(request.get_full_path()).split('//')[1]
         self.domain = get_current_site(request).name
         self.appname = self.model._meta.app_label
-        print "self admin each request",self.domain,self.appname
+        #print "self admin each request",self.domain,self.appname
         if self.list_display_links or self.list_display_links is None or not list_display:
             return self.list_display_links
         else:
@@ -112,15 +112,12 @@ class ProductAdmin(admin.ModelAdmin):
         return [x.name for x in lst]
 
     def get_filever_of_product(self,obj):
-        print "self ",self.__dict__
-        print "obj",obj.__dict__
         #url = 'http://%s/admin/%s/filever/?product=%d' % (self.ref_url.split('/')[0],settings.app,obj.id)
         #print "url is",url
-        print "domain",self.domain,self.appname
         #return format_html('<a href=%s>%s</a>' % (url,obj.name))
         return format_html('<a href="http://%s/admin/%s/filever/?product=%d" >%s</a>' 
                 % (self.domain,self.appname,obj.id,obj.name))
-    get_filever_of_product.short_description = u'版本列表'
+    get_filever_of_product.short_description = u'产品列表'
 
 
 
@@ -136,7 +133,8 @@ class FtpUserAdmin(UserAdmin):
             (_(u'更改密码'),{'fields':('password',)}),
             #(_(u'公司名称'),{'fields':('name',)}),
             #(_(u'注册时间'),{'fields':('date_joined',)}),
-            (_(u'权限'),{'fields':('user_permissions','groups','is_active','is_staff')}),
+            #(_(u'权限'),{'fields':('user_permissions','groups','is_active','is_staff')}),
+            (_(u'权限'),{'fields':('is_active','is_staff')}),
             #(_(u'登录管理'),{'fields':('is_staff',)}),
             #(_(u'激活'),{'fields':('is_active',)}),
             )
@@ -156,16 +154,30 @@ class FtpUserAdmin(UserAdmin):
     list_display = ('name','email','is_active','is_staff','reg_ip','date_joined','last_login')
     search_fields = ('email','name')
     ordering = ('email',)
-    change_list_template=("admin/index.html",)
+    #change_list_template=("admin/index.html",)
 
-    #def has_delete_permission(self,request,obj=None):
-    #    return False
-
-    def get_fieldsets(self,request,obj=None):
+    def has_delete_permission(self,request,obj=None):
         if request.user.is_superuser:
-            return self.fieldsets
-        else:
-            return self.normal_fieldsets
+            return True
+        return False
+
+    def has_change_permission(self,request,obj=None):
+        if request.user.is_superuser:
+            return True
+        return False
+
+    def has_add_permission(self,request):
+        if request.user.is_superuser:
+            return True
+        return False
+
+
+
+    #def get_fieldsets(self,request,obj=None):
+    #    if request.user.is_superuser:
+    #        return self.fieldsets
+    #    else:
+    #        return self.normal_fieldsets
 
     def get_queryset(self,request):
         qs  = super(FtpUserAdmin,self).get_queryset(request)
@@ -384,14 +396,14 @@ class VerionAdmin(admin.ModelAdmin):
 
 
 #admin.site.register(Commpany)
-#admin.site.register(FtpUser,FtpUserAdmin)
 #ftp_site = FtpSite()
 #ftp_site.register(FtpUser,FtpUserAdmin)
 #ftp_site.register(Product,ProductAdmin)
 #ftp_site.register(FileType,FileTypeAdmin)
 #ftp_site.register(FileVer,VerionAdmin)
-admin.site.register(FtpUser)
+#admin.site.register(FtpUser)
 setattr(admin.site,'site_title',u'FTP管理')
+admin.site.register(FtpUser,FtpUserAdmin)
 admin.site.register(Product,ProductAdmin)
 admin.site.register(FileType,FileTypeAdmin)
 admin.site.register(FileVer,VerionAdmin)

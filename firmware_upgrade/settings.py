@@ -130,6 +130,7 @@ MEDIA_ROOT='/opt/data/ftproot'
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 LANGUAGE_CODE = 'zh_CN'
 LOGIN_URL = '/admin/login/'
+LOGIN_REDIRECT_URL='/admin/'
 
 TIME_ZONE = 'Asia/Shanghai'
 USE_TZ = True

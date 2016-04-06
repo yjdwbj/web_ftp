@@ -82,7 +82,7 @@ class RegisterForm(forms.Form):
             label=u'公司名称',
             min_length=4,max_length=50,
             widget = forms.TextInput(attrs={'class':'form-control'}),
-            help_text=u'请填写贵公司名，方便我们工作人审核',
+            help_text=u'请填写贵公司名，方便我们工作人员审核',
             )
 
     email = forms.EmailField(
@@ -142,7 +142,6 @@ class RegisterForm(forms.Form):
 
             
     def get_captcha(self):
-        print "form dict",self.__dict__
         code = self.data['captcha']
         if not code or len(code) != 6:
             raise forms.ValidationError(u'请输入正确的验证码')
@@ -199,7 +198,6 @@ class CustomAuthForm(AuthenticationForm):
         #return self.cleaned_data
 
     def get_captcha(self):
-        print "form dict",self.__dict__
         code = self.data['captcha']
         if not code or len(code) != 6:
             self.add_error('captcha',u'请输入正确的验证码')
