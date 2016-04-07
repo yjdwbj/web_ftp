@@ -67,6 +67,14 @@ class ProductAdmin(admin.ModelAdmin):
     appname = ''
 
 
+    def log_change(self,request,object,message):
+        pass
+
+    def log_addition(self,request,object,message):
+        pass
+
+    def log_deletion(self,request,object,object_repr):
+        pass
 
 
     def delete_product(self,request,queryset):
@@ -171,6 +179,16 @@ class FtpUserAdmin(UserAdmin):
             return True
         return False
 
+    def log_change(self,request,object,message):
+        pass
+
+    def log_addition(self,request,object,message):
+        pass
+
+    def log_deletion(self,request,object,object_repr):
+        pass
+
+
 
 
     #def get_fieldsets(self,request,obj=None):
@@ -198,6 +216,16 @@ class FileTypeAdmin(admin.ModelAdmin):
     #inlines = [VerionInline]
     actions = ['delete_platform']
     list_filter = ('name',)
+
+    def log_change(self,request,object,message):
+        pass
+
+    def log_addition(self,request,object,message):
+        pass
+
+    def log_deletion(self,request,object,object_repr):
+        pass
+
     
     def delete_platform(self,request,queryset):
         pdir_list = set()
@@ -372,6 +400,15 @@ class VerionAdmin(admin.ModelAdmin):
             fd.write(obj.commit.encode('UTF-8'))
         update_json(product_dir)
 
+
+    def log_change(self,request,object,message):
+        pass
+
+    def log_addition(self,request,object,message):
+        pass
+
+    def log_deletion(self,request,object,object_repr):
+        pass
 
 
 

@@ -7,5 +7,7 @@
 {% endif %}
 {% if show_save_as_new %}<input type="submit" value="{% trans 'Save as new' %}" name="_saveasnew" />{% endif %}
 {% if show_save_and_add_another %}<input type="submit" value="{% trans 'Save and add another' %}" name="_addanother" />{% endif %}
+{% if user.is_superuser %}
 {% if show_save_and_continue %}<input type="submit" value="{% trans 'Save and continue editing' %}" name="_continue" />{% endif %}
+{% endif %}
 </div>

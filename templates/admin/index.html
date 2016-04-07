@@ -74,8 +74,8 @@
 {% endif %}
 </div>
 {% endblock %}
-
 {% block sidebar %}
+{% if user.is_superuser %}
 <div id="content-related">
     <div class="module" id="recent-actions-module">
         <h2>{% trans 'Recent Actions' %}</h2>
@@ -105,4 +105,5 @@
             {% endif %}
     </div>
 </div>
+{% endif %}
 {% endblock %}
