@@ -88,6 +88,12 @@ class Product(models.Model):
     def __unicode__(self):
         return self.name
 
+    #def clean(self):
+    #    print "model self dict",self.__dict__
+    #    if Product.objects.filter(name=self.name).exists():
+    #        raise forms.ValidationError(u'产品名已经存在')
+
+
 
 class FileType(models.Model):
     class Meta:
@@ -95,6 +101,7 @@ class FileType(models.Model):
         verbose_name_plural=u"平台类型"
         unique_together = ("name","product_name")
     product_name = models.ForeignKey(Product,blank=False,verbose_name=u'产品名称',
+    #product_name = models.ManyToManyField(Product,blank=False,verbose_name=u'产品名称',
                 help_text=u'点击"+"可以添加一行新的选项')
     #ftp_user= models.ForeignKey(FtpUser,editable=False,on_delete=models.CASCADE,null = False,verbose_name=u"用户名")
     name = models.CharField(max_length=256,null=False,blank= False,verbose_name=u'平台名称',
@@ -123,11 +130,20 @@ def get_upload_dir(req,filename):
 
 class CustomFileField(models.FileField):
     def __init__(self,*args,**kwargs):
-        self.blacklist =kwargs.pop("blacklist")
-        self.max_upload_size = kwargs.pop("max_upload_size")
+        self.blacklist =kwargs.pop("blacklist",None)
+        self.max_upload_size = kwargs.pop("max_upload_size",None)
         super(CustomFileField,self).__init__(*args,**kwargs)
 
     def clean(self,*args,**kwargs):
+        ver = args[1]
+        if ver.ver_name is None:
+            #raise forms.ValidationError({'ver_name':u'不能为空'});
+            raise forms.ValidationError(u'不能为空');
+        if ver.target_name_id is None:
+            raise forms.ValidationError(u'不能为空');
+        if ver.commit is None:
+            raise forms.ValidationError(u'不能为空');
+
         data = super(CustomFileField,self).clean(*args,**kwargs)
         file = data.file
         try:
@@ -170,6 +186,13 @@ class FileVer(models.Model):
     def __unicode__(self):
         return self.ver_name
 
+    #def clean(self):
+    #    if self.ver_name is None:
+    #        raise forms.ValidationError({'ver_name':u'不能为空'});
+    #    if self.target_name_id is None:
+    #        raise forms.ValidationError({'target_name':u'不能为空'});
+    #    if self.commit is None:
+    #        raise forms.ValidationError({'commit':u'不能为空'});
 
 
 

@@ -4,9 +4,10 @@ from django.contrib.auth.models import Group
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm,PasswordResetForm
 from django.conf import settings
-from .models import FtpUser,FileVer,Product
+from .models import FtpUser,FileVer,Product,FileType
 from django.contrib.auth.forms import UserCreationForm,UserChangeForm
 from django.contrib.admin.templatetags.admin_static import static
+
 
 class FtpUserCreationForm(UserCreationForm):
     def __init__(self,*args,**kargs):
@@ -27,15 +28,31 @@ class FtpUserChangeForm(UserChangeForm):
         fields = ('email',)
 
 
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        exclude = ()
+
+    def __init__(self,*args,**kwargs):
+        self.user = kwargs.pop('request',None).user
+        super(ProductForm,self).__init__(*args,**kwargs)
+
+    def clean(self):
+        cdata = super(ProductForm,self).clean()
+        if Product.objects.filter(ftp_user=self.user,name=cdata.get('name',None)):
+            raise forms.ValidationError(u'产品名称已经存在')
+
+
+
 class FileVerionForm(forms.ModelForm):
     class Meta:
         model = FileVer
         exclude = ()
         
-    def __init__(self,*args,**kwargs):
-        super(FileVerionForm,self).__init__(*args,**kwargs)
-        if self.instance:
-            self.fields['product_name'].get_queryset = Product.objects.filter(ftp_user=None)
+
+    def clean(self):
+        cdata = super(FileVerionForm,self).clean()
+
 
 
 class ResetPassword(PasswordResetForm):
@@ -173,6 +190,12 @@ class RegisterForm(forms.Form):
             'vendor/xregexp/xregexp.min.js',
         ]
         return forms.Media(js=[static('admin/js/%s' % url) for url in js])
+
+
+
+
+
+
 
 
 class CustomAuthForm(AuthenticationForm):
