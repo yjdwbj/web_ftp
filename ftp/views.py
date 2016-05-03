@@ -69,7 +69,8 @@ def reset_password(request):
     return render_to_response('registration/password_reset_form.html',{'form':ResetPassword()})
 
 
-@csrf_exempt
+@sensitive_post_parameters()
+@csrf_protect
 def register(request):
     if request.method == 'POST':
         #print "request --------------",request.__dict__
@@ -82,12 +83,13 @@ def register(request):
             else:
                 form.add_error('captcha',u'验证码不正确')
                 form.fields['captcha'].widget.attrs['value'] = ''
-                return render_to_response('register.html',{'form': form})
+                return render_to_response('register.html',{'form': form},context_instance=RequestContext(request))
         else:
             form.fields['captcha'].widget.attrs['value'] = ''
-            return render_to_response('register.html', {'form': form})
+            return render_to_response('register.html', {'form': form},
+                    context_instance=RequestContext(request))
         
-    return render_to_response('register.html', {'form': RegisterForm()})
+    return render_to_response('register.html', {'form': RegisterForm()},context_instance=RequestContext(request))
 
 
 @sensitive_post_parameters()
