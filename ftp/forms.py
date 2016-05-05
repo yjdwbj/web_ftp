@@ -208,6 +208,7 @@ class CustomAuthForm(AuthenticationForm):
 
     def __init__(self,request=None,*args,**kwargs):
         super(CustomAuthForm,self).__init__(*args,**kwargs)
+        self.request = request
 
     def clean(self):
         captcha = self.cleaned_data.get('captcha')
@@ -225,6 +226,12 @@ class CustomAuthForm(AuthenticationForm):
         if not code or len(code) != 6:
             self.add_error('captcha',u'请输入正确的验证码')
         return code
+
+    def confirm_login_allowed(self,user):
+        super(CustomAuthForm,self).confirm_login_allowed(user)
+        obj = FtpUser.objects.get(name = user);
+        obj.last_ip = self.request.META.get('REMOTE_ADDR')
+        obj.save()
 
     @property
     def media(self):

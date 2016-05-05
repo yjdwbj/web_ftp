@@ -56,6 +56,8 @@ class FtpUser(AbstractBaseUser,PermissionsMixin):
     #is_superuser = models.BooleanField(default=False,verbose_name=u"超级用户")
     
     date_joined = models.DateTimeField(default=timezone.now,verbose_name=u'注册时间')
+    last_ip = models.GenericIPAddressField(editable=False,default='0.0.0.0',
+            max_length=15,verbose_name=u'最后登录IP')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name','phone_num','reg_ip']

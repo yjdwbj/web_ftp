@@ -284,7 +284,7 @@ class FtpUserAdmin(UserAdmin):
             )
     form = FtpUserChangeForm
     add_form = FtpUserCreationForm
-    list_display = ('name','email','is_active','is_staff','reg_ip','date_joined','last_login')
+    list_display = ('name','email','is_active','is_staff','reg_ip','date_joined','last_login','last_ip')
     search_fields = ('email','name')
     ordering = ('email',)
     #change_list_template=("admin/index.html",)

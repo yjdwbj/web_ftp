@@ -110,6 +110,7 @@ def login(request,template_name='admin/login.html',
                     redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
                 # Okay, security check complete. Log the user in.
                 auth_login(request, form.get_user())
+                
                 return HttpResponseRedirect(redirect_to)
             else:
                 form.fields['captcha'].widget.attrs['value'] = ''
