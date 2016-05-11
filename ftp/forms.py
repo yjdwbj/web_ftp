@@ -156,6 +156,11 @@ class RegisterForm(forms.Form):
         captcha = cleaned_data.get('captcha')
         if not captcha or len(captcha) != 6:
             raise forms.ValidationError(u'验证码不正确')
+        company = self.cleaned_data['commpanyname']
+        obj = FtpUser.objects.filter(name=company)
+        if obj:
+            raise forms.ValidationError(u'公司名称已经存在')
+
 
             
     def get_captcha(self):
@@ -230,8 +235,10 @@ class CustomAuthForm(AuthenticationForm):
     def confirm_login_allowed(self,user):
         super(CustomAuthForm,self).confirm_login_allowed(user)
         obj = FtpUser.objects.get(name = user);
-        obj.last_ip = self.request.META.get('REMOTE_ADDR')
-        obj.save()
+        print "obj",obj
+        if obj: 
+            obj.last_ip = self.request.META.get('REMOTE_ADDR')
+            obj.save()
 
     @property
     def media(self):
